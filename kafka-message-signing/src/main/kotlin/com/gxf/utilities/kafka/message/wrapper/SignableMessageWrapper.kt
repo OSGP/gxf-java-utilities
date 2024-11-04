@@ -5,19 +5,28 @@ package com.gxf.utilities.kafka.message.wrapper
 
 import java.io.IOException
 import java.nio.ByteBuffer
+import java.util.function.Consumer
+import java.util.function.Function
 
 /**
  * Wrapper for signable messages. Because these messages are generated from Avro schemas, they can't be changed. This
  * wrapper unifies them for the MessageSigner.
  */
-abstract class SignableMessageWrapper<T>(val message: T) {
+class SignableMessageWrapper<T>(
+    val message: T,
+    private val messageGetter: Function<T, ByteBuffer>,
+    private val signatureGetter: Function<T, ByteBuffer?>,
+    private val signatureSetter: Consumer<ByteBuffer?>,
+) {
 
     /** @return ByteBuffer of the whole message */
-    @Throws(IOException::class) abstract fun toByteBuffer(): ByteBuffer
+    @Throws(IOException::class) fun toByteBuffer(): ByteBuffer = messageGetter.apply(message)
 
     /** @return ByteBuffer of the signature in the message */
-    abstract fun getSignature(): ByteBuffer?
+    fun getSignature(): ByteBuffer? = signatureGetter.apply(message)
 
     /** @param signature The signature in ByteBuffer form to be set on the message */
-    abstract fun setSignature(signature: ByteBuffer?)
+    fun setSignature(signature: ByteBuffer?) {
+        signatureSetter.accept(signature)
+    }
 }

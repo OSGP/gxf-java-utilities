@@ -5,7 +5,6 @@ package com.gxf.utilities.kafka.message.signing
 
 import com.gxf.utilities.kafka.message.wrapper.SignableMessageWrapper
 import java.nio.ByteBuffer
-import java.nio.charset.StandardCharsets
 import java.security.SecureRandom
 import java.util.Random
 import java.util.function.Consumer
@@ -34,11 +33,12 @@ class MessageSignerTest {
 
     @Test
     fun signsMessageWithoutSignature() {
-        val messageWrapper: SignableMessageWrapper<*> = this.messageWrapper()
+        val messageWrapper: SignableMessageWrapper<TestableMessage> = this.messageWrapper()
 
         messageSigner.signUsingField(messageWrapper)
 
         assertThat(messageWrapper.getSignature()).isNotNull()
+        assertThat(messageWrapper.message.signature).isEqualTo(messageWrapper.getSignature())
     }
 
     @Test
@@ -157,17 +157,13 @@ class MessageSignerTest {
         assertThat(messageSignerSigningDisabled.canVerifyMessageSignatures()).isFalse()
     }
 
-    private fun messageWrapper(): TestableWrapper {
-        return TestableWrapper()
+    private fun messageWrapper(signature: ByteBuffer? = null): SignableMessageWrapper<TestableMessage> {
+        val testableMessage = TestableMessage(signature = signature)
+        return SignableMessageWrapper(
+            testableMessage, TestableMessage::getMsgBytes, TestableMessage::getSigBytes, testableMessage::setSigBytes)
     }
 
-    private fun messageWrapper(signature: ByteBuffer): TestableWrapper {
-        val testableWrapper = TestableWrapper()
-        testableWrapper.setSignature(signature)
-        return testableWrapper
-    }
-
-    private fun properlySignedMessage(): TestableWrapper {
+    private fun properlySignedMessage(): SignableMessageWrapper<TestableMessage> {
         val messageWrapper = this.messageWrapper()
         messageSigner.signUsingField(messageWrapper)
         return messageWrapper
@@ -225,18 +221,16 @@ class MessageSignerTest {
         }
     }
 
-    private class TestableWrapper : SignableMessageWrapper<String>("Some test message") {
-        private var signature: ByteBuffer? = null
+    /**
+     * Object to test the wrapper with. Intentionally chose function names that are different from the ones in the
+     * wrapper class
+     */
+    private class TestableMessage(var message: ByteBuffer = ByteBuffer.allocate(3), var signature: ByteBuffer? = null) {
+        fun getMsgBytes(): ByteBuffer = ByteBuffer.wrap(message.array())
 
-        override fun toByteBuffer(): ByteBuffer {
-            return ByteBuffer.wrap(message.toByteArray(StandardCharsets.UTF_8))
-        }
+        fun getSigBytes(): ByteBuffer? = this.signature
 
-        override fun getSignature(): ByteBuffer? {
-            return this.signature
-        }
-
-        override fun setSignature(signature: ByteBuffer?) {
+        fun setSigBytes(signature: ByteBuffer?) {
             this.signature = signature
         }
     }
