@@ -5,8 +5,6 @@ package com.gxf.utilities.kafka.message.wrapper
 
 import java.io.IOException
 import java.nio.ByteBuffer
-import java.util.function.Consumer
-import java.util.function.Function
 
 /**
  * Wrapper for signable messages. Because these messages are generated from Avro schemas, they can't be changed. This
@@ -14,19 +12,19 @@ import java.util.function.Function
  */
 class SignableMessageWrapper<T>(
     val message: T,
-    private val messageGetter: Function<T, ByteBuffer>,
-    private val signatureGetter: Function<T, ByteBuffer?>,
-    private val signatureSetter: Consumer<ByteBuffer?>,
+    private val messageGetter: (T) -> ByteBuffer,
+    private val signatureGetter: (T) -> ByteBuffer?,
+    private val signatureSetter: (T, ByteBuffer?) -> Unit,
 ) {
 
     /** @return ByteBuffer of the whole message */
-    @Throws(IOException::class) fun toByteBuffer(): ByteBuffer = messageGetter.apply(message)
+    @Throws(IOException::class) fun toByteBuffer(): ByteBuffer = messageGetter(message)
 
     /** @return ByteBuffer of the signature in the message */
-    fun getSignature(): ByteBuffer? = signatureGetter.apply(message)
+    fun getSignature(): ByteBuffer? = signatureGetter(message)
 
     /** @param signature The signature in ByteBuffer form to be set on the message */
     fun setSignature(signature: ByteBuffer?) {
-        signatureSetter.accept(signature)
+        signatureSetter(message, signature)
     }
 }
