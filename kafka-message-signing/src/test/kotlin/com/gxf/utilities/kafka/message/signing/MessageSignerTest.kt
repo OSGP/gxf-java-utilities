@@ -27,7 +27,8 @@ class MessageSignerTest {
             signatureProvider = "SunRsaSign",
             keyAlgorithm = "RSA",
             privateKeyFile = ClassPathResource("/rsa-private.pem"),
-            publicKeyFile = ClassPathResource("/rsa-public.pem"))
+            publicKeyFile = ClassPathResource("/rsa-public.pem")
+        )
 
     private val messageSigner = MessageSigner(messageSignerProperties)
 
@@ -160,7 +161,11 @@ class MessageSignerTest {
     private fun messageWrapper(signature: ByteBuffer? = null): SignableMessageWrapper<TestableMessage> {
         val testableMessage = TestableMessage(signature = signature)
         return SignableMessageWrapper(
-            testableMessage, TestableMessage::getMsgBytes, TestableMessage::getSigBytes, TestableMessage::setSigBytes)
+            testableMessage,
+            TestableMessage::getMsgBytes,
+            TestableMessage::getSigBytes,
+            TestableMessage::setSigBytes
+        )
     }
 
     private fun properlySignedMessage(): SignableMessageWrapper<TestableMessage> {
@@ -209,7 +214,8 @@ class MessageSignerTest {
         override fun getSchema(): Schema {
             return Schema.Parser()
                 .parse(
-                    """{"type":"record","name":"Message","namespace":"com.alliander.osgp.kafka.message.signing","fields":[{"name":"message","type":{"type":"string","avro.java.string":"String"}}]}""")
+                    """{"type":"record","name":"Message","namespace":"com.alliander.osgp.kafka.message.signing","fields":[{"name":"message","type":{"type":"string","avro.java.string":"String"}}]}"""
+                )
         }
 
         override fun get(field: Int): Any {

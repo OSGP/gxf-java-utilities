@@ -278,7 +278,8 @@ class MessageSigner(properties: MessageSigningProperties) {
             keyAlgorithm,
             signatureProvider,
             canSignMessages(),
-            canVerifyMessageSignatures())
+            canVerifyMessageSignatures()
+        )
     }
 
     companion object {
