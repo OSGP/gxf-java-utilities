@@ -107,14 +107,14 @@ class MessageSigner(properties: MessageSigningProperties) {
             "This MessageSigner is not configured for signing, it can only be used for verification"
         }
         val oldSignature = message.getSignature()
-        message.setSignature(null)
+        message.clearSignature()
         val byteBuffer = toByteBuffer(message)
         try {
             return signature(byteBuffer)
         } catch (e: SignatureException) {
             throw UncheckedSecurityException("Unable to sign message", e)
         } finally {
-            message.setSignature(oldSignature)
+            oldSignature?.let { message.setSignature(it) }
         }
     }
 
@@ -186,7 +186,7 @@ class MessageSigner(properties: MessageSigningProperties) {
         }
 
         try {
-            message.setSignature(null)
+            message.clearSignature()
             return verifySignatureBytes(messageSignature, toByteBuffer(message))
         } catch (e: Exception) {
             logger.error("Unable to verify message signature", e)

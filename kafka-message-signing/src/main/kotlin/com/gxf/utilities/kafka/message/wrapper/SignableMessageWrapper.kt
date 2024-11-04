@@ -18,13 +18,17 @@ class SignableMessageWrapper<T>(
 ) {
 
     /** @return ByteBuffer of the whole message */
-    @Throws(IOException::class) fun toByteBuffer(): ByteBuffer = messageGetter(message)
+    @Throws(IOException::class) internal fun toByteBuffer(): ByteBuffer = messageGetter(message)
 
     /** @return ByteBuffer of the signature in the message */
-    fun getSignature(): ByteBuffer? = signatureGetter(message)
+    internal fun getSignature(): ByteBuffer? = signatureGetter(message)
 
     /** @param signature The signature in ByteBuffer form to be set on the message */
-    fun setSignature(signature: ByteBuffer?) {
+    internal fun setSignature(signature: ByteBuffer) {
         signatureSetter(message, signature)
+    }
+
+    internal fun clearSignature() {
+        signatureSetter(message, null)
     }
 }
