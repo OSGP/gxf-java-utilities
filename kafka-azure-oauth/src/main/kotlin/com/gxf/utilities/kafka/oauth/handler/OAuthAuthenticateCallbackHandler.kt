@@ -101,7 +101,8 @@ class OAuthAuthenticateCallbackHandler : AuthenticateCallbackHandler {
                 aadParameters.scopes(),
                 authResult.expiresOnDate().toInstant().toEpochMilli(),
                 aadClient.clientId(),
-                System.currentTimeMillis())
+                System.currentTimeMillis()
+            )
         } catch (e: InterruptedException) {
             Thread.currentThread().interrupt()
             throw KafkaOAuthException("Retrieving JWT token was interrupted", e)
