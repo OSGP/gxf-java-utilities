@@ -27,7 +27,7 @@ class MessageSignerTest {
             signatureProvider = "SunRsaSign",
             keyAlgorithm = "RSA",
             privateKeyFile = ClassPathResource("/rsa-private.pem"),
-            publicKeyFile = ClassPathResource("/rsa-public.pem")
+            publicKeyFile = ClassPathResource("/rsa-public.pem"),
         )
 
     private val messageSigner = MessageSigner(messageSignerProperties)
@@ -164,7 +164,7 @@ class MessageSignerTest {
             testableMessage,
             TestableMessage::getMsgBytes,
             TestableMessage::getSigBytes,
-            TestableMessage::setSigBytes
+            TestableMessage::setSigBytes,
         )
     }
 

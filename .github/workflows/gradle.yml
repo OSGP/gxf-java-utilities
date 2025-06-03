@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
 name: Gradle Pipeline
 
 on:
@@ -23,17 +26,13 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+          cache: 'gradle'
       - name: Setup Gradle to generate and submit dependency graphs
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
         with:
           dependency-graph: generate-and-submit
       - name: Build with Gradle
-        run: ./gradlew build integrationTest
-        env:
-          GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Run sonar analysis with Gradle
-        run: ./gradlew testCodeCoverageReport integrationTestCodeCoverageReport sonar
+        run: ./gradlew build integrationTest testCodeCoverageReport integrationTestCodeCoverageReport sonar
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -42,7 +42,7 @@ class OAuthClientConfig {
         val credential: IClientCredential =
             ClientCredentialFactory.createFromCertificate(
                 getPrivateKey(Objects.requireNonNull(clientData.privateKey)),
-                getCertificate(Objects.requireNonNull(clientData.certificate))
+                getCertificate(Objects.requireNonNull(clientData.certificate)),
             )
         return try {
             ConfidentialClientApplication.builder(clientData.clientId, credential)
