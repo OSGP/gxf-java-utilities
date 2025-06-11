@@ -10,14 +10,25 @@ import java.nio.ByteBuffer
  * Wrapper for signable messages. Because these messages are generated from Avro schemas, they can't be changed. This
  * wrapper unifies them for the MessageSigner.
  */
-abstract class SignableMessageWrapper<T>(val message: T) {
+class SignableMessageWrapper<T>(
+    val message: T,
+    private val messageGetter: (T) -> ByteBuffer,
+    private val signatureGetter: (T) -> ByteBuffer?,
+    private val signatureSetter: (T, ByteBuffer?) -> Unit,
+) {
 
     /** @return ByteBuffer of the whole message */
-    @Throws(IOException::class) abstract fun toByteBuffer(): ByteBuffer
+    @Throws(IOException::class) internal fun toByteBuffer(): ByteBuffer = messageGetter(message)
 
     /** @return ByteBuffer of the signature in the message */
-    abstract fun getSignature(): ByteBuffer?
+    internal fun getSignature(): ByteBuffer? = signatureGetter(message)
 
     /** @param signature The signature in ByteBuffer form to be set on the message */
-    abstract fun setSignature(signature: ByteBuffer?)
+    internal fun setSignature(signature: ByteBuffer) {
+        signatureSetter(message, signature)
+    }
+
+    internal fun clearSignature() {
+        signatureSetter(message, null)
+    }
 }
