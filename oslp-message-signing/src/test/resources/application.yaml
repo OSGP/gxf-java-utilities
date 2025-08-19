@@ -1,0 +1,6 @@
+signing:
+  security:
+    provider: "SunEC"
+    algorithm: "SHA256withECDSA"
+    key-type: "EC"
+  private-key-file: "/etc/osp/oslp/keys/private/flexovl-signing-server-oslp-private.key"
