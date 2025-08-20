@@ -4,11 +4,8 @@
 package com.gxf.utilities.oslp.message.signing.configuration
 
 import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 
+@EnableConfigurationProperties(SigningConfiguration::class)
 @ConfigurationProperties(prefix = "signing")
-class SigningConfiguration(
-    val securityProvider: String,
-    val securityAlgorithm: String,
-    val securityKeyType: String,
-    val privateKeyFile: String,
-)
+class SigningConfiguration(val securityProvider: String, val securityAlgorithm: String)

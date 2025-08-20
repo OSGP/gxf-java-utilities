@@ -3,24 +3,31 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.gxf.utilities.oslp.message.signing
 
-import org.springframework.boot.test.context.SpringBootTest
+import com.gxf.utilities.oslp.message.signing.configuration.SigningConfiguration
+import java.security.KeyPairGenerator
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
 
-@SpringBootTest
-class SigningUtilTest(private val signingUtil: SigningUtil) {
+class SigningUtilTest {
 
-    fun contextLoads() {
-        // This test will simply check if the application context loads successfully.
-        // You can add more specific tests for SigningUtil here.
-    }
+    private val signingUtil: SigningUtil =
+        SigningUtil(
+            signingConfiguration =
+                SigningConfiguration(securityProvider = "SunEC", securityAlgorithm = "SHA256withECDSA"),
+            keyProvider =
+                object : KeyProvider {
+                    private val keyPair = KeyPairGenerator.getInstance("EC").apply { initialize(256) }.generateKeyPair()
 
-    fun createSignatureTest() {
-        signingUtil.createSignature("Test message".toByteArray())
-    }
+                    override fun getPublicKey() = keyPair.public
 
-    fun verifySignatureTest() {
-        val message = "Test message".toByteArray()
+                    override fun getPrivateKey() = keyPair.private
+                },
+        )
+
+    @Test
+    fun `should sign and verify message`() {
+        val message = "test-message".toByteArray()
         val signature = signingUtil.createSignature(message)
-        val isValid = signingUtil.verifySignature(message, signature)
-        assert(isValid) { "Signature verification failed" }
+        assertTrue(signingUtil.verifySignature(message, signature))
     }
 }
