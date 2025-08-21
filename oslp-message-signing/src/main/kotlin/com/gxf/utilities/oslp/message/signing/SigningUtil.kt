@@ -3,19 +3,20 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.gxf.utilities.oslp.message.signing
 
-import com.gxf.utilities.oslp.message.signing.configuration.SigningConfiguration
+import com.gxf.utilities.oslp.message.signing.configuration.SigningProperties
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.security.SecureRandom
 import java.security.Signature
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.stereotype.Component
 
 @Component
-class SigningUtil(private val signingConfiguration: SigningConfiguration, private val keyProvider: KeyProvider) {
-    val logger: Logger = LoggerFactory.getLogger(this::class.java)
+@ConditionalOnMissingBean(SigningUtil::class)
+class SigningUtil(val signingConfiguration: SigningProperties, private val keyProvider: KeyProvider) {
+    private val logger = KotlinLogging.logger {}
 
     fun createSignature(message: ByteArray): ByteArray {
-        logger.debug("Creating signature for message of length: ${message.size}")
+        logger.debug { "Creating signature for message of length: ${message.size}" }
         return Signature.getInstance(signingConfiguration.securityAlgorithm, signingConfiguration.securityProvider)
             .apply {
                 initSign(keyProvider.getPrivateKey(), SecureRandom())
@@ -25,7 +26,7 @@ class SigningUtil(private val signingConfiguration: SigningConfiguration, privat
     }
 
     fun verifySignature(message: ByteArray, securityKey: ByteArray): Boolean {
-        logger.debug("Verifying signature for message of length: ${message.size}")
+        logger.debug { "Verifying signature for message of length: ${message.size}" }
         val builder =
             Signature.getInstance(signingConfiguration.securityAlgorithm, signingConfiguration.securityProvider).apply {
                 initVerify(keyProvider.getPublicKey())

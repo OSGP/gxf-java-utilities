@@ -1,4 +1,3 @@
 signing:
-  security:
-    provider: "SunEC"
-    algorithm: "SHA256withECDSA"
+  security-provider: "SunEC"
+  security-algorithm: "SHA256withECDSA"
