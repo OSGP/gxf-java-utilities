@@ -6,11 +6,10 @@ package com.gxf.utilities.oslp.message.signing
 import com.gxf.utilities.oslp.message.signing.configuration.SigningProperties
 import java.security.KeyPair
 import java.security.KeyPairGenerator
+import java.security.PrivateKey
+import java.security.PublicKey
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
 
 class SigningUtilTest {
 
@@ -18,76 +17,53 @@ class SigningUtilTest {
     val keyPair1: KeyPair = keyPairGenerator.generateKeyPair()
     val keyPair2: KeyPair = keyPairGenerator.generateKeyPair()
 
-    val mockKeyProvider1: KeyProvider =
-        mock<KeyProvider> {
-            on { getPrivateKey() } doReturn keyPair1.private
-            on { getPublicKey() } doReturn keyPair1.public
-        }
+    class TestKeyProvider(private val privateKey: PrivateKey, private val publicKey: PublicKey) : KeyProvider {
+        override fun getPrivateKey() = privateKey
 
-    val mockKeyProvider2: KeyProvider =
-        mock<KeyProvider> {
-            on { getPrivateKey() } doReturn keyPair2.private
-            on { getPublicKey() } doReturn keyPair2.public
-        }
+        override fun getPublicKey() = publicKey
+    }
 
-    val mockKeyProvider3: KeyProvider =
-        mock<KeyProvider> {
-            on { getPrivateKey() } doReturn keyPair1.private
-            on { getPublicKey() } doReturn keyPair1.public
-        }
+    val keyProvider1: TestKeyProvider = TestKeyProvider(privateKey = keyPair1.private, publicKey = keyPair1.public)
+
+    val keyProvider2: TestKeyProvider = TestKeyProvider(privateKey = keyPair2.private, publicKey = keyPair2.public)
 
     private val signingUtil1: SigningUtil =
         SigningUtil(
             signingConfiguration = SigningProperties(securityProvider = "SunEC", securityAlgorithm = "SHA256withECDSA"),
-            keyProvider = mockKeyProvider1,
+            keyProvider = keyProvider1,
         )
 
     private val signingUtil2: SigningUtil =
         SigningUtil(
             signingConfiguration = SigningProperties(securityProvider = "SunEC", securityAlgorithm = "SHA256withECDSA"),
-            keyProvider = mockKeyProvider2,
+            keyProvider = keyProvider2,
         )
 
     private val signingUtil3: SigningUtil =
         SigningUtil(
             signingConfiguration = SigningProperties(securityProvider = "SunEC", securityAlgorithm = "SHA256withECDSA"),
-            keyProvider = mockKeyProvider3,
+            keyProvider = keyProvider1,
         )
-
-    @Test
-    fun `should sign and verify message from same SingingUtil`() {
-        val message = "test-message".toByteArray()
-        val signature = signingUtil1.createSignature(message)
-        verify(mockKeyProvider1).getPrivateKey()
-        assertThat(signingUtil1.verifySignature(message, signature)).isTrue()
-        verify(mockKeyProvider1).getPublicKey()
-    }
 
     @Test
     fun `should sign and verify message from different SigningUtils with same keys`() {
         val message = "test-message".toByteArray()
         val signature = signingUtil1.createSignature(message)
-        verify(mockKeyProvider1).getPrivateKey()
         assertThat(signingUtil3.verifySignature(message, signature)).isTrue()
-        verify(mockKeyProvider3).getPublicKey()
     }
 
     @Test
     fun `should not verify tampered message`() {
         var message = "test-message".toByteArray()
         val signature = signingUtil1.createSignature(message)
-        verify(mockKeyProvider1).getPrivateKey()
         message = "tampered-message".toByteArray()
         assertThat(signingUtil1.verifySignature(message, signature)).isFalse()
-        verify(mockKeyProvider1).getPublicKey()
     }
 
     @Test
     fun `should not verify tampered keys`() {
         val message = "test-message".toByteArray()
         val signature = signingUtil1.createSignature(message)
-        verify(mockKeyProvider1).getPrivateKey()
         assertThat(signingUtil2.verifySignature(message, signature)).isFalse()
-        verify(mockKeyProvider2).getPublicKey()
     }
 }

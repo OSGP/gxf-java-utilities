@@ -39,6 +39,4 @@ class SigningUtil(val signingConfiguration: SigningProperties, private val keyPr
 
         return builder.verify(truncatedKey)
     }
-
-    companion object
 }
