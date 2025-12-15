@@ -12,7 +12,7 @@ msal4j = "1.23.1"
 sonarqube = "7.2.0.6526"
 spotless = "8.1.0"
 gradleWrapperUpgrade = "0.12"
-springBoot = "3.5.7"
+springBoot = "4.0.0"
 kotlinLogging = "7.0.13"
 
 [libraries]
