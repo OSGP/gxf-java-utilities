@@ -12,7 +12,7 @@ mockk = "1.14.9"
 msal4j = "1.24.0"
 sonarqube = "7.2.2.6593"
 spotless = "8.2.1"
-springBoot = "4.0.2"
+springBoot = "4.0.3"
 springmockk = "5.0.1"
 
 [libraries]
