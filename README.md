@@ -1,3 +1,10 @@
+# !! Deprecation notice !!
+
+- This repo will be archived in the near future. 
+- No new versions will be released here
+
+-----
+
 # GXF Java utilities
 
 This repository contains utility libraries for GXF java applications.
