@@ -3,16 +3,16 @@
 # SPDX-License-Identifier: Apache-2.0
 
 [versions]
-avro = "1.12.1"
+avro = "1.12.2"
 avroPlugin = "1.9.1"
 dependencyManagement = "1.1.7"
-kotlin = "2.3.21"
-kotlinLogging = "8.0.03"
-mockk = "1.14.9"
-msal4j = "1.24.1"
-sonarqube = "7.3.0.8198"
-spotless = "8.5.1"
-springBoot = "4.0.6"
+kotlin = "2.4.10"
+kotlinLogging = "8.0.4"
+mockk = "1.14.11"
+msal4j = "1.25.1"
+sonarqube = "7.4.0.8496"
+spotless = "8.10.0"
+springBoot = "4.1.0"
 springmockk = "5.0.1"
 
 [libraries]
